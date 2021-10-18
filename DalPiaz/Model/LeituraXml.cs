@@ -152,6 +152,9 @@ namespace DalPiaz.Model
                                         Esn = item.Esn,
                                         InputXml = dir.Split("\\".ToCharArray()).LastOrDefault(),
                                         DataConvertida = p.Date,
+                                        DataPos =   Convert.ToDateTime(p.Date),
+                                        DataCriacao = DateTime.Now,
+                                        Tipo = "GLOBAL",
                                         Payload = item.Payload.Text,
                                         Unixtime = item.UnixTime.ToString(),
                                         Lat = p.Lat.ToString(),
@@ -227,47 +230,19 @@ namespace DalPiaz.Model
 
 
 
+                                    
+
                                     //verificar ultimo horario
-                                    bool jaExiste = false;
-                                    string[] dirsPosicao = Directory.GetFiles(raizSubnivel3, "*.txt");
-                                    foreach (string dirP in dirsPosicao)
+                                    MessageFile aux = ctx.messageFiles.OrderByDescending(x => x.DataPos).Where(x => x.Mobile == p.Mobile.Trim().ToUpper()).FirstOrDefault();
+
+
+                                    if (aux != null)
                                     {
-                                        string nomeBarcoDataHora = dirP.Split("\\".ToCharArray()).LastOrDefault().Replace(".txt", "").ToUpper();
-                                        string[] vetNomeBarco = nomeBarcoDataHora.Split("_".ToCharArray());
-
-                                        string hora = vetNomeBarco[vetNomeBarco.Length - 1];
-                                        string data = vetNomeBarco[vetNomeBarco.Length - 2];
-
-                                        string nomeBarco = nomeBarcoDataHora.Replace("_" + data + "_" + hora, "");
-
-
-
-                                        if (nomeBarco == p.Mobile.ToUpper())
-                                        {
-                                            DateTime dataHoraP = DateTime.ParseExact(data + " " + hora, "yyyyMMdd HHmmss", null);
-                                            if (Convert.ToDateTime(p.Date).CompareTo(dataHoraP) >= 0)
-                                            {
-                                                //remove o arquivo  e cria outro
-                                                File.Delete(dirP);
-
-                                                csv = new StringBuilder();
-                                                newLine = NmeaGPGGA(dataAux, p.Lat.ToString(), p.Lon.ToString());
-                                                csv.Append(newLine);
-
-                                                //after your loop
-                                                File.WriteAllText(
-                                                    raizSubnivel3 + "\\" + _NAME_OUTPUT_FILE + ".txt",
-                                                    csv.ToString());
-
-                                            }
-
-                                            //arquivo já existe
-                                            jaExiste = true;
-
-                                        }
+                                        //remove o arquivo  e cria outro
+                                        File.Delete(raizSubnivel3 + "\\" + p.Mobile.Trim().ToUpper() + ".txt");
                                     }
 
-                                    if (jaExiste == false)
+                                    if (Convert.ToDateTime(p.Date).CompareTo(aux.DataPos) >= 0)
                                     {
                                         csv = new StringBuilder();
                                         newLine = NmeaGPGGA(dataAux, p.Lat.ToString(), p.Lon.ToString());
@@ -275,10 +250,71 @@ namespace DalPiaz.Model
 
                                         //after your loop
                                         File.WriteAllText(
-                                            raizSubnivel3 + "\\" + _NAME_OUTPUT_FILE + ".txt",
+                                            raizSubnivel3 + "\\" + p.Mobile.Trim().ToUpper() + ".txt",
                                             csv.ToString());
-
                                     }
+                                    else
+                                    {
+                                        csv = new StringBuilder();
+                                        newLine = NmeaGPGGA(aux.DataPos, p.Lat.ToString(), p.Lon.ToString());
+                                        csv.Append(newLine);
+
+                                        //after your loop
+                                        File.WriteAllText(
+                                            raizSubnivel3 + "\\" + p.Mobile.Trim().ToUpper() + ".txt",
+                                            csv.ToString());
+                                    }
+
+
+
+
+
+                                    //
+                                    //bool jaExiste = false;
+                                    //string[] dirsPosicao = Directory.GetFiles(raizSubnivel3, "*.txt");
+                                    //foreach (string dirP in dirsPosicao)
+                                    //{
+                                    //    string nomeBarcoDataHora = dirP.Split("\\".ToCharArray()).LastOrDefault().Replace(".txt", "").ToUpper();
+                                    //    string[] vetNomeBarco = nomeBarcoDataHora.Split("_".ToCharArray());
+
+                                    //    string hora = vetNomeBarco[vetNomeBarco.Length - 1];
+                                    //    string data = vetNomeBarco[vetNomeBarco.Length - 2];
+
+                                    //    string nomeBarco = nomeBarcoDataHora.Replace("_" + data + "_" + hora, "");
+
+
+
+                                    //    if (nomeBarco == p.Mobile.ToUpper())
+                                    //    {
+
+
+
+
+                                    //        //DateTime dataHoraP = DateTime.ParseExact(data + " " + hora, "yyyyMMdd HHmmss", null);
+                                    //        if (Convert.ToDateTime(p.Date).CompareTo(aux.DataPos) >= 0)
+                                    //        {
+
+
+                                    //        }
+
+                                    //        //arquivo já existe
+                                    //        jaExiste = true;
+
+                                    //    }
+                                    //}
+
+                                    //if (jaExiste == false)
+                                    //{
+                                    //    csv = new StringBuilder();
+                                    //    newLine = NmeaGPGGA(dataAux, p.Lat.ToString(), p.Lon.ToString());
+                                    //    csv.Append(newLine);
+
+                                    //    //after your loop
+                                    //    File.WriteAllText(
+                                    //        raizSubnivel3 + "\\" + _NAME_OUTPUT_FILE + ".txt",
+                                    //        csv.ToString());
+
+                                    //}
 
 
 

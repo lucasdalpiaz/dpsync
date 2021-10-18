@@ -36,6 +36,9 @@ namespace DalPiaz.contexto
             modelBuilder.Entity<MessageFile>().Property(p => p.DataConvertida).HasColumnName("data_convertida");
             modelBuilder.Entity<MessageFile>().Property(p => p.Lat).HasColumnName("lat");
             modelBuilder.Entity<MessageFile>().Property(p => p.Lon).HasColumnName("lon");
+            modelBuilder.Entity<MessageFile>().Property(p => p.Tipo).HasColumnName("tipo");
+            modelBuilder.Entity<MessageFile>().Property(p => p.DataPos).HasColumnName("data_pos");
+            modelBuilder.Entity<MessageFile>().Property(p => p.DataCriacao).HasColumnName("data_criacao");
             modelBuilder.Entity<MessageFile>().Property(p => p.Obs).HasColumnName("obs");
             modelBuilder.Entity<MessageFile>().ToTable("tb_dpsync");
 

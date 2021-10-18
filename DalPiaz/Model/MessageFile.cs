@@ -22,6 +22,9 @@ namespace DalPiaz.Model
         public string OutputCsv { get; set; }
         public string Mobile { get; set; }
         public string DataConvertida { get; set; }
+        public DateTime DataPos { get; set; }
+        public DateTime DataCriacao { get; set; }
+        public string Tipo { get; set; }
         public string Lat { get; set; }
         public string Lon { get; set; }
         #endregion
